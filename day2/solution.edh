@@ -1,0 +1,33 @@
+
+# %% # Part 1
+
+namespace part1(
+  posi= 0, depth= 0,
+) {
+
+  method forward(amt) this.posi += amt
+  method down(amt) this.depth += amt
+  method up(amt) this.depth -= amt
+
+  include './input'
+}
+
+part1.posi * part1.depth
+
+# %% # Part 2
+
+namespace part2(
+  posi= 0, depth= 0, aim= 0,
+) {
+
+  method forward(amt) {
+    this.posi += amt
+    this.depth += this.aim * amt
+  }
+  method down(amt) this.aim += amt
+  method up(amt) this.aim -= amt
+
+  include './input'
+}
+
+part2.posi * part2.depth

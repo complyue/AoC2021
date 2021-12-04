@@ -1,0 +1,35 @@
+    λ> input :: [Int] <- fmap read . lines <$> readFile "input"
+    
+    λ> part1 :: Int = sum $ fromEnum <$> zipWith (>) (drop 1 input) (reverse $ drop 1 $ reverse input)
+    λ> part1
+    
+    λ> :{
+    λ| part2 :: [Int] -> Int
+    λ| part2 (x0 : y0 : z0 : rest0) = go 0 x0 y0 z0 rest0
+    λ|   where
+    λ|     go :: Int -> Int -> Int -> Int -> [Int] -> Int
+    λ|     go cnt _x _y _z [] = cnt
+    λ|     go cnt x y z (z' : rest) = go cnt' y z z' rest
+    λ|       where
+    λ|         cnt' = cnt + if z' > x then 1 else 0
+    λ|         -- Haskell helped me realize the `y+z` part can disappear from below
+    λ|         -- cnt' = cnt + if y+z+z' > x+y+z then 1 else 0
+    λ| part2 _ = 0
+    λ| :}
+    λ> part2 input
+
+    
+    λ> part1 :: Int = sum $ fromEnum <$> zipWith (>) (drop 1 input) input
+    λ> part1
+    
+    λ> part2 :: Int = sum $ fromEnum <$> zipWith (>) (drop 3 input) input
+    λ> part2
+
+
+    λ> import Data.Bool
+
+    λ> part1 :: Int = sum $ bool 0 1 <$> zipWith (>) (drop 1 input) input
+    λ> part1
+    
+    λ> part2 :: Int = sum $ bool 0 1 <$> zipWith (>) (drop 3 input) input
+    λ> part2

@@ -1,0 +1,76 @@
+    
+    λ> import Control.Monad.State.Strict
+    
+    λ> input :: [String] <- lines <$> readFile "input"
+
+
+    λ> -- Part 1
+    
+    λ> :{
+    λ| data SubmState1 = SubmState1
+    λ|   { subm1'hori'posi :: !Int,
+    λ|     subm1'depth :: !Int
+    λ|   }
+    λ|   deriving (Eq, Show)
+    λ| 
+    λ| type SubmPilot1 = State SubmState1
+    λ| 
+    λ| pilotSubm1 :: [String] -> SubmPilot1 ()
+    λ| pilotSubm1 cmdls = sequence_ $ followCmd <$> cmdls
+    λ|   where
+    λ|     followCmd :: String -> SubmPilot1 ()
+    λ|     followCmd cmdl = case words cmdl of
+    λ|       ["forward", amt] -> do
+    λ|         SubmState1 posi depth <- get
+    λ|         put $ SubmState1 (posi + read amt) depth
+    λ|       ["down", amt] -> do
+    λ|         SubmState1 posi depth <- get
+    λ|         put $ SubmState1 posi (depth + read amt)
+    λ|       ["up", amt] -> do
+    λ|         SubmState1 posi depth <- get
+    λ|         put $ SubmState1 posi (depth - read amt)
+    λ|       _ -> error $ "bad command line: " ++ cmdl
+    λ| :}
+    λ> 
+    λ> case runState (pilotSubm1 input) (SubmState1 0 0) of
+    λ|   (_, SubmState1 posi depth) -> return (posi * depth)
+    λ| 
+    1990000
+    λ> 
+
+
+    λ> -- Part 2
+    
+    λ> :{
+    λ| data SubmState2 = SubmState2
+    λ|   { subm2'hori'posi :: !Int,
+    λ|     subm2'depth :: !Int,
+    λ|     subm2'aim :: !Int
+    λ|   }
+    λ|   deriving (Eq, Show)
+    λ| 
+    λ| type SubmPilot2 = State SubmState2
+    λ| 
+    λ| pilotSubm2 :: [String] -> SubmPilot2 ()
+    λ| pilotSubm2 cmdls = sequence_ $ followCmd <$> cmdls
+    λ|   where
+    λ|     followCmd :: String -> SubmPilot2 ()
+    λ|     followCmd cmdl = case words cmdl of
+    λ|       ["forward", amt] -> do
+    λ|         SubmState2 posi depth aim <- get
+    λ|         let amtn = read amt
+    λ|         put $ SubmState2 (posi + amtn) (depth + aim * amtn) aim
+    λ|       ["down", amt] -> do
+    λ|         SubmState2 posi depth aim <- get
+    λ|         put $ SubmState2 posi depth (aim + read amt)
+    λ|       ["up", amt] -> do
+    λ|         SubmState2 posi depth aim <- get
+    λ|         put $ SubmState2 posi depth (aim - read amt)
+    λ|       _ -> error $ "bad command line: " ++ cmdl
+    λ| :}
+    λ> 
+    λ> case runState (pilotSubm2 input) (SubmState2 0 0 0) of
+    λ|   (_, SubmState2 posi depth _aim) -> return (posi * depth)
+    λ| 
+    1975421260
+    λ> 

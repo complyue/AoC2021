@@ -1,0 +1,6 @@
+{
+  "edh.terminal.cmdl": [
+    "stack run edh",
+    "edh"
+  ]
+}

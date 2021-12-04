@@ -1,0 +1,88 @@
+
+producer playBingo( outlet as winnerCalled ) {
+  drawnNumber = sink
+
+  class Board {
+    boardCnt = 0 # count total number of boards ever constructed
+
+    method __init__( sz as this.sz, *nums ) {
+      assert$ len(nums) is this.sz**2
+      this.nums = nums
+      this.boardNum = ai Board.boardCnt+=1
+    }
+
+    method watchNumbersDrawn() go { # do all this in a separate goroutine
+      marks = Vector( *()=<do false for _ from 1..this.sz**2 )
+      nums = []=<this.nums # convert to list to be used as stack (for pop())
+      nums =: [3,2,5] # prototype it as a list of numbers (for IntelliSense)
+
+      method checkRowMarked(r): 'Bool' {
+        for c from 0..^this.sz
+        do if not marks[ this.sz*r+c ] then return false
+        return true
+      }
+
+      method checkColMarked(c): 'Bool' {
+        for r from 0..^this.sz
+        do if not marks[ this.sz*r+c ] then return false
+        return true
+      }
+
+      method sumOfUnmarked() {
+        s = 0
+        do s += n if not marked
+        for (marked, n) from zip(()=<marks, this.nums)
+        return s
+      }
+
+      for@ row from 0..^this.sz do
+      for@ col from 0..^this.sz do {
+        n = nums.pop()
+        perceive drawnNumber n -> { # upon this number is drawn
+          marks[ row * this.sz + col ] = true
+          if checkRowMarked(row) or checkColMarked(col) then {
+            let s = sumOfUnmarked(), score = n * s
+            winnerCalled <- score
+            console.info<| 'Board #' ++this.boardNum++ ' win!'
+            console.debug<| 'Score= ' ++score++ ' by n=' ++n++ ', s=' ++s
+            break # this board already win, done watching it (break this goro)
+          }
+        }
+      }
+
+      # keep this goroutine watching numbers drawn, until win or no more numbers
+      for _ from drawnNumber do pass
+    }
+  }
+
+  method drawNumbers( *nums ) {
+    for n from nums do {
+      drawnNumber <- n
+      console.info<| 'Draw ' ++ n
+      {# Our winners do race to report their wins!
+The winning order can be messed up for real, then you can't pass AoC!
+So count 3-2-1 before drawing next number, no absolute guarantee, but you'll make it.
+       #}
+      for _ from console.everySeconds(3) do break
+    }
+  }
+
+  include './input'
+
+  # Mark the stream end after all numbers drawn
+  # But patience needed to pass AoC
+  for _ from console.everySeconds(3) do break
+  winnerCalled <- nil
+}
+
+# %% #
+firstScore = None
+
+for winnerScore from playBingo() do {
+  if firstScore is None then {
+    firstScore = winnerScore
+  }
+}
+
+console.print$ "The first winner's score is: " ++ firstScore
+console.print$ "The last winner's score is: " ++ winnerScore
