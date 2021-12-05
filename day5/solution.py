@@ -45,15 +45,12 @@ with open("./input", "r") as f:
         else:
             step_x = x2 > x1 and 1 or -1
             step_y = y2 > y1 and 1 or -1
-            x, y = x1, y1
-            while True:
+            for x, y in zip(
+                range(x1, x2 + step_x, step_x), range(y1, y2 + step_y, step_y)
+            ):
                 key = x, y
                 mark_cnts[key] = 1 + mark_cnts.get(key, 0)
 
-                if x == x2 or y == y2:
-                    break
-
-                x += step_x
-                y += step_y
-
 sum(1 for c in mark_cnts.values() if c > 1)
+
+# %%
