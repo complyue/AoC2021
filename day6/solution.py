@@ -27,7 +27,7 @@ def simulate(ndays=80):
 # %% # Part 1
 simulate()
 
-# %% # Part 1
+# %% # Part 2
 simulate(256)
 
 # %%
